@@ -1,8 +1,9 @@
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
+import { join } from 'path';
 import { SkillVersion } from '../types/learning.js';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 export interface RollbackResult {
   success: boolean;
@@ -20,7 +21,7 @@ export class VersionManager {
   private skillsDir: string;
   private workDir: string;
 
-  constructor(skillsDir = '.claude/skills', workDir = '.') {
+  constructor(skillsDir = join('.claude', 'skills'), workDir = '.') {
     this.skillsDir = skillsDir;
     this.workDir = workDir;
   }
@@ -28,23 +29,23 @@ export class VersionManager {
   /**
    * Run a git command in the work directory
    */
-  private async git(command: string): Promise<string> {
-    const { stdout } = await execAsync(command, {
-      encoding: 'utf8',
+  private async git(args: string[]): Promise<string> {
+    const { stdout } = await execFileAsync('git', args, {
+      encoding: 'utf8' as BufferEncoding,
       cwd: this.workDir,
     });
-    return stdout;
+    return stdout.trim();
   }
 
   /**
    * Get version history for a skill
    */
   async getHistory(skillName: string): Promise<SkillVersion[]> {
-    const skillPath = `${this.skillsDir}/${skillName}/SKILL.md`;
+    const skillPath = join(this.skillsDir, skillName, 'SKILL.md');
 
     try {
       const stdout = await this.git(
-        `git log --format="%H|%h|%ai|%s" --follow -- "${skillPath}"`
+        ['log', '--format=%H|%h|%ai|%s', '--follow', '--', skillPath]
       );
 
       if (!stdout.trim()) {
@@ -85,10 +86,11 @@ export class VersionManager {
    * Get skill content at a specific version
    */
   async getVersionContent(skillName: string, hash: string): Promise<string> {
-    const skillPath = `${this.skillsDir}/${skillName}/SKILL.md`;
+    const skillPath = join(this.skillsDir, skillName, 'SKILL.md');
+    const gitPath = skillPath.replace(/\\/g, '/');
 
     try {
-      return await this.git(`git show ${hash}:"${skillPath}"`);
+      return await this.git(['show', `${hash}:${gitPath}`]);
     } catch (err) {
       const error = err as { message?: string };
       if (error.message?.includes('does not exist') || error.message?.includes('invalid object name')) {
@@ -103,7 +105,8 @@ export class VersionManager {
    * Creates a new commit (non-destructive)
    */
   async rollback(skillName: string, targetHash: string): Promise<RollbackResult> {
-    const skillPath = `${this.skillsDir}/${skillName}/SKILL.md`;
+    const skillPath = join(this.skillsDir, skillName, 'SKILL.md');
+    const gitPath = skillPath.replace(/\\/g, '/');
 
     try {
       // Get current hash before rollback
@@ -120,14 +123,14 @@ export class VersionManager {
       }
 
       // Checkout the file at target version
-      await this.git(`git checkout ${targetHash} -- "${skillPath}"`);
+      await this.git(['checkout', targetHash, '--', gitPath]);
 
       // Stage the change
-      await this.git(`git add "${skillPath}"`);
+      await this.git(['add', gitPath]);
 
       // Commit the rollback
       const commitMessage = `rollback(${skillName}): revert to ${targetHash.slice(0, 7)}`;
-      await this.git(`git commit -m "${commitMessage}"`);
+      await this.git(['commit', '-m', commitMessage]);
 
       // Get new hash
       const newHash = await this.getCurrentHash(skillName);
@@ -151,10 +154,10 @@ export class VersionManager {
    * Compare two versions of a skill
    */
   async compareVersions(skillName: string, hash1: string, hash2: string): Promise<string> {
-    const skillPath = `${this.skillsDir}/${skillName}/SKILL.md`;
+    const skillPath = join(this.skillsDir, skillName, 'SKILL.md');
 
     try {
-      return await this.git(`git diff ${hash1} ${hash2} -- "${skillPath}"`);
+      return await this.git(['diff', hash1, hash2, '--', skillPath]);
     } catch (err) {
       const error = err as { message?: string };
       throw new Error(`Failed to compare versions: ${error.message}`);
@@ -165,11 +168,11 @@ export class VersionManager {
    * Get the current (HEAD) hash for a skill
    */
   async getCurrentHash(skillName: string): Promise<string | null> {
-    const skillPath = `${this.skillsDir}/${skillName}/SKILL.md`;
+    const skillPath = join(this.skillsDir, skillName, 'SKILL.md');
 
     try {
-      const stdout = await this.git(`git log -1 --format="%H" -- "${skillPath}"`);
-      return stdout.trim() || null;
+      const stdout = await this.git(['log', '-1', '--format=%H', '--', skillPath]);
+      return stdout || null;
     } catch {
       return null;
     }
