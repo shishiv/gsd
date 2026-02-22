@@ -149,7 +149,7 @@ export class SnapshotManager {
       throw e;
     }
 
-    const lines = content.split('\n').filter(line => line.trim());
+    const lines = content.split(/\r?\n/).filter(line => line.trim());
     if (lines.length === 0) {
       return null;
     }

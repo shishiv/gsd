@@ -67,7 +67,7 @@ export class WorkflowRunStore {
       throw error;
     }
 
-    const lines = content.split('\n').filter(line => line.trim() !== '');
+    const lines = content.split(/\r?\n/).filter(line => line.trim() !== '');
     const entries: WorkflowRunEntry[] = [];
 
     for (const line of lines) {

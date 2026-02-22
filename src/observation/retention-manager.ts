@@ -31,7 +31,7 @@ export class RetentionManager {
       throw e;
     }
 
-    const lines = content.split('\n').filter(line => line.trim());
+    const lines = content.split(/\r?\n/).filter(line => line.trim());
     const entries: Pattern[] = [];
 
     for (const line of lines) {

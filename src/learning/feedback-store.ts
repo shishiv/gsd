@@ -92,7 +92,7 @@ export class FeedbackStore {
       const content = await readFile(this.feedbackPath, 'utf-8');
       const events: FeedbackEvent[] = [];
 
-      for (const line of content.split('\n')) {
+      for (const line of content.split(/\r?\n/)) {
         if (!line.trim()) continue;
         try {
           events.push(JSON.parse(line) as FeedbackEvent);

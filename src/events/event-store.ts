@@ -67,7 +67,7 @@ export class EventStore {
       throw error;
     }
 
-    const lines = content.split('\n').filter(line => line.trim() !== '');
+    const lines = content.split(/\r?\n/).filter(line => line.trim() !== '');
     const entries: EventEntry[] = [];
 
     for (const line of lines) {
@@ -125,7 +125,7 @@ export class EventStore {
         throw error;
       }
 
-      const lines = content.split('\n').filter(line => line.trim() !== '');
+      const lines = content.split(/\r?\n/).filter(line => line.trim() !== '');
       let consumed = false;
       const updatedLines: string[] = [];
 
@@ -187,7 +187,7 @@ export class EventStore {
         throw error;
       }
 
-      const lines = content.split('\n').filter(line => line.trim() !== '');
+      const lines = content.split(/\r?\n/).filter(line => line.trim() !== '');
       const now = Date.now();
       const updatedLines: string[] = [];
 

@@ -249,7 +249,7 @@ async function handleSuggest(args: string[]): Promise<number> {
 
     try {
       const content = await readFile(sessionsPath, 'utf-8');
-      const lines = content.split('\n').filter(line => line.trim() !== '');
+      const lines = content.split(/\r?\n/).filter(line => line.trim() !== '');
       for (const line of lines) {
         try {
           const envelope = JSON.parse(line);

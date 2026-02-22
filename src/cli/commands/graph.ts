@@ -73,7 +73,7 @@ export async function graphCommand(args: string[]): Promise<number> {
       const { join } = await import('path');
       const sessionsPath = join('.planning', 'patterns', 'sessions.jsonl');
       const content = await readFile(sessionsPath, 'utf-8');
-      const lines = content.trim().split('\n').filter(Boolean);
+      const lines = content.trim().split(/\r?\n/).filter(Boolean);
 
       if (lines.length > 0) {
         const { CoActivationTracker } = await import('../../agents/co-activation-tracker.js');

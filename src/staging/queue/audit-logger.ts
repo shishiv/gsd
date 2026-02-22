@@ -138,7 +138,7 @@ export async function readAuditLog(
     return [];
   }
 
-  const lines = content.split('\n');
+  const lines = content.split(/\r?\n/);
   const entries: QueueAuditEntry[] = [];
 
   for (const line of lines) {

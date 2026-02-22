@@ -142,7 +142,7 @@ export class SuccessTracker {
       const content = await readFile(this.signalsPath, 'utf-8');
       const signals: SuccessSignal[] = [];
 
-      for (const line of content.split('\n')) {
+      for (const line of content.split(/\r?\n/)) {
         if (!line.trim()) continue;
         try {
           signals.push(JSON.parse(line) as SuccessSignal);

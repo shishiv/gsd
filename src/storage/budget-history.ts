@@ -116,7 +116,7 @@ export class BudgetHistory {
       return [];
     }
 
-    const lines = content.split('\n').filter(line => line.trim());
+    const lines = content.split(/\r?\n/).filter(line => line.trim());
     const entries: BudgetSnapshot[] = [];
 
     for (const line of lines) {

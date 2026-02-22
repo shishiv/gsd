@@ -847,7 +847,7 @@ async function handleSnapshotList(args: string[]): Promise<number> {
       throw e;
     }
 
-    const lines = content.split('\n').filter(line => line.trim());
+    const lines = content.split(/\r?\n/).filter(line => line.trim());
     const summaries: Array<{ session_id: string; saved_at: string; summary: string }> = [];
 
     for (const line of lines) {

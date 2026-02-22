@@ -101,7 +101,7 @@ export class AuditLogger {
 
     const entries: AuditEntry[] = [];
 
-    for (const line of content.split('\n')) {
+    for (const line of content.split(/\r?\n/)) {
       if (!line.trim()) continue;
 
       let parsed: unknown;

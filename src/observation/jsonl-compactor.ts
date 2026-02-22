@@ -63,7 +63,7 @@ export class JsonlCompactor {
       return { retained: 0, removed: 0, malformed: 0, tampered: 0, error: String(err) };
     }
 
-    const lines = content.split('\n').filter((line) => line.trim() !== '');
+    const lines = content.split(/\r?\n/).filter((line) => line.trim() !== '');
     const cutoffMs = Date.now() - this.config.maxAgeDays * 24 * 60 * 60 * 1000;
 
     const retained: string[] = [];

@@ -146,7 +146,7 @@ export class CalibrationStore {
       const content = await readFile(this.eventsPath, 'utf-8');
       const events: CalibrationEvent[] = [];
 
-      for (const line of content.split('\n')) {
+      for (const line of content.split(/\r?\n/)) {
         if (!line.trim()) continue;
         try {
           events.push(JSON.parse(line) as CalibrationEvent);

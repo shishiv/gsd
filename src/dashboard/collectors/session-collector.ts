@@ -64,7 +64,7 @@ function toSessionMetric(obs: SessionObservation): SessionMetric {
 async function readSessionsFile(path: string): Promise<SessionMetric[]> {
   try {
     const content = await readFile(path, 'utf-8');
-    const lines = content.split('\n').filter((line) => line.trim().length > 0);
+    const lines = content.split(/\r?\n/).filter((line) => line.trim().length > 0);
     const sessions: SessionMetric[] = [];
 
     for (const line of lines) {

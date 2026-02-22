@@ -95,7 +95,7 @@ export class ResultStore {
       const content = await readFile(resultsPath, 'utf-8');
       const snapshots: TestRunSnapshot[] = [];
 
-      for (const line of content.split('\n')) {
+      for (const line of content.split(/\r?\n/)) {
         if (!line.trim()) continue;
         try {
           snapshots.push(JSON.parse(line) as TestRunSnapshot);

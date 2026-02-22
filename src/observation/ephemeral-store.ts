@@ -63,7 +63,7 @@ export class EphemeralStore {
       throw error;
     }
 
-    const lines = content.split('\n').filter(line => line.trim() !== '');
+    const lines = content.split(/\r?\n/).filter(line => line.trim() !== '');
     const observations: SessionObservation[] = [];
 
     for (const line of lines) {
@@ -126,7 +126,7 @@ export class EphemeralStore {
       throw error;
     }
 
-    const lines = content.split('\n').filter(line => line.trim() !== '');
+    const lines = content.split(/\r?\n/).filter(line => line.trim() !== '');
     const patternSessions = new Map<string, Set<string>>();
 
     for (const line of lines) {
@@ -194,6 +194,6 @@ export class EphemeralStore {
       throw error;
     }
 
-    return content.split('\n').filter(line => line.trim() !== '').length;
+    return content.split(/\r?\n/).filter(line => line.trim() !== '').length;
   }
 }

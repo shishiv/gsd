@@ -101,7 +101,7 @@ export class ClassificationLogger {
       const content = await readFile(this.logFile, 'utf-8');
       const entries: ClassificationLogEntry[] = [];
 
-      for (const line of content.split('\n')) {
+      for (const line of content.split(/\r?\n/)) {
         const trimmed = line.trim();
         if (!trimmed) continue;
 

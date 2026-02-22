@@ -141,7 +141,7 @@ export class BundleProgressStore {
       throw error;
     }
 
-    const lines = content.split('\n').filter(line => line.trim() !== '');
+    const lines = content.split(/\r?\n/).filter(line => line.trim() !== '');
     const entries: BundleProgressEntry[] = [];
 
     for (const line of lines) {

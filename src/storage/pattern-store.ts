@@ -54,7 +54,7 @@ export class PatternStore {
 
     try {
       const content = await readFile(filePath, 'utf-8');
-      const lines = content.split('\n').filter(line => line.trim() !== '');
+      const lines = content.split(/\r?\n/).filter(line => line.trim() !== '');
 
       const patterns: Pattern[] = [];
       for (const line of lines) {
