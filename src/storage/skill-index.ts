@@ -233,12 +233,14 @@ export class SkillIndex {
 
       // Check file patterns (glob-like, simplified)
       if (file && entry.triggers.files) {
+        // Normalize backslashes for Windows path compatibility
+        const normalizedFile = file.replace(/\\/g, '/');
         const matches = entry.triggers.files.some(pattern => {
           // Simple glob: * matches anything
           const regex = new RegExp(
             '^' + pattern.replace(/\*/g, '.*').replace(/\?/g, '.') + '$'
           );
-          return regex.test(file);
+          return regex.test(normalizedFile);
         });
         if (matches) return true;
       }

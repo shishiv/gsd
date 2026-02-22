@@ -122,6 +122,26 @@ export class SkillStore {
       throw new Error(errorMsg);
     }
 
+    // Check for case-insensitive name collisions (NTFS/macOS are case-insensitive)
+    const existing = await this.list();
+    const lowerName = skillName.toLowerCase();
+    const collision = existing.find(s => s.toLowerCase() === lowerName && s !== skillName);
+    if (collision) {
+      throw new Error(
+        `Skill name "${skillName}" collides with existing "${collision}" on case-insensitive filesystems`
+      );
+    }
+
+    // Validate total path length for Windows MAX_PATH (260 chars)
+    const skillDir = join(this.skillsDir, skillName);
+    const longestSubpath = join(skillDir, 'references', 'example-reference.md');
+    if (resolve(longestSubpath).length > 248) {
+      throw new Error(
+        `Skill path too long for Windows (${resolve(longestSubpath).length} chars). ` +
+        `Use a shorter skill name or install directory.`
+      );
+    }
+
     // Check for reserved names (fallback protection - workflow should check first)
     // Skip if forceOverrideReservedName is set (user already confirmed override in workflow)
     const existingExtForCheck = getExtension(metadata);
@@ -187,7 +207,6 @@ export class SkillStore {
     // Normalize for disk (new format, no legacy fields at root)
     const diskMetadata = normalizeForWrite(fullMetadata);
 
-    const skillDir = join(this.skillsDir, skillName);
     const skillPath = join(skillDir, 'SKILL.md');
 
     // Defense-in-depth: verify resolved path stays within skills directory
