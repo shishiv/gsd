@@ -362,7 +362,10 @@ export class SkillStore {
       for (const script of result.scripts) {
         const scriptPath = join(scriptsDir, script.filename);
         await writeFile(scriptPath, script.content, 'utf-8');
-        await chmod(scriptPath, 0o755);
+        // chmod is a no-op on Windows NTFS; skip explicitly
+        if (process.platform !== 'win32') {
+          await chmod(scriptPath, 0o755);
+        }
       }
     }
 

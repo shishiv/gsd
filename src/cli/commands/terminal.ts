@@ -191,7 +191,10 @@ function writeEntryScript(baseDir: string, sessionName: string): string {
     '',
   ].join('\n');
   writeFileSync(scriptPath, content, 'utf-8');
-  chmodSync(scriptPath, 0o755);
+  // chmodSync is a no-op on Windows NTFS; skip explicitly
+  if (process.platform !== 'win32') {
+    chmodSync(scriptPath, 0o755);
+  }
   return scriptPath;
 }
 

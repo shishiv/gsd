@@ -133,7 +133,8 @@ export class SkillGenerator {
         for (const script of scripts) {
           const scriptPath = join(scriptsDir, script.filename);
           await writeFile(scriptPath, script.content, 'utf-8');
-          if (script.executable) {
+          if (script.executable && process.platform !== 'win32') {
+            // chmod is a no-op on Windows NTFS; skip explicitly
             await chmod(scriptPath, 0o755);
           }
         }
