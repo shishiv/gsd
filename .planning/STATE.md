@@ -56,6 +56,10 @@ Recent decisions affecting current work:
 - [Phase 02-path-construction-audit]: Apply forward-slash conversion only for git object-store colon-syntax paths (show/checkout); git log/diff/add handle native OS paths via argv correctly
 - [03-02]: No process.platform branch for SIGKILL — child.kill('SIGKILL') already safe on all platforms; inline comment satisfies PROC-03 documentation requirement
 - [03-02]: SIGKILL comment placed inside try block at call site — maximum clarity for future maintainers
+- [03-01]: Wrap process.kill(-child.pid) with platform guard not removal — detached: true preserved for Unix process group semantics
+- [03-01]: chmod guards added for code clarity even though chmod is a silent no-op on Windows NTFS
+- [03-01]: Test file chmod calls left unmodified — chmod does not throw on Windows so test files are not a runtime risk
+- [03-01]: 2 pre-existing timeout test failures confirmed pre-existing on Windows (bash sleep not killed by child.kill) — not caused by platform guards
 
 ### Pending Todos
 
@@ -69,5 +73,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: Completed 03-02-PLAN.md — launcher.ts SIGKILL escalation documented as Windows-safe (PROC-03), all 15 tests pass
+Stopped at: Completed 03-01-PLAN.md — executor.ts process group kill guarded (PROC-01), all 4 production chmod/chmodSync calls guarded (PROC-02) in executor.ts, skill-store.ts, skill-generator.ts, terminal.ts
 Resume file: None

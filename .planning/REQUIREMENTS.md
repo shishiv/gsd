@@ -19,8 +19,8 @@
 
 ### Process and Signal Handling
 
-- [ ] **PROC-01**: `process.kill(-child.pid)` in `executor.ts` guarded with `process.platform !== 'win32'` check with Windows-safe alternative
-- [ ] **PROC-02**: `chmod()` calls wrapped in platform guard across 4 production files (+ 3 test files verified safe — chmod is a no-op on Windows NTFS)
+- [x] **PROC-01**: `process.kill(-child.pid)` in `executor.ts` guarded with `process.platform !== 'win32'` check with Windows-safe alternative
+- [x] **PROC-02**: `chmod()` calls wrapped in platform guard across 4 production files (+ 3 test files verified safe — chmod is a no-op on Windows NTFS)
 - [x] **PROC-03**: SIGKILL usage in `launcher.ts` guarded with platform check and Windows-safe fallback
 
 ## v2 Requirements
@@ -56,8 +56,8 @@
 | PATH-03 | Phase 2 | Complete |
 | PATH-04 | Phase 2 | Complete |
 | PATH-05 | Phase 2 | Complete |
-| PROC-01 | Phase 3 | Pending |
-| PROC-02 | Phase 3 | Pending |
+| PROC-01 | Phase 3 | Complete |
+| PROC-02 | Phase 3 | Complete |
 | PROC-03 | Phase 3 | Complete |
 
 **Coverage:**
