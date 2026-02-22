@@ -12,7 +12,7 @@ A surgical compatibility pass on an existing TypeScript CLI tool. Three phases o
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Repository Foundations** - Add `.gitattributes` to prevent CRLF corruption on Windows clones
+- [x] **Phase 1: Repository Foundations** - Add `.gitattributes` to prevent CRLF corruption on Windows clones (completed 2026-02-22)
 - [ ] **Phase 2: Path Construction Audit** - Replace all Unix-assumption path code with `path.join`/`os.homedir` across storage, safety, and CLI layers
 - [ ] **Phase 3: Process and Signal Guards** - Add platform guards around process group kills and `chmod` calls
 
@@ -26,7 +26,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. After a fresh Windows clone, YAML skill files parse without trailing `\r` characters in string values
   2. Shell scripts in `scripts/` are executable in Git Bash without `\r: command not found` errors
   3. Vitest snapshot files are stable across Linux and Windows (no spurious CRLF diffs on re-run)
-**Plans:** 1 plan
+**Plans:** 1/1 plans complete
 Plans:
 - [ ] 01-01-PLAN.md — Create .gitattributes with LF enforcement and renormalize all tracked files
 
@@ -59,6 +59,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Repository Foundations | 0/1 | Not started | - |
+| 1. Repository Foundations | 1/1 | Complete   | 2026-02-22 |
 | 2. Path Construction Audit | 0/TBD | Not started | - |
 | 3. Process and Signal Guards | 0/TBD | Not started | - |

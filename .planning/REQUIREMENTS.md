@@ -7,7 +7,7 @@
 
 ### Repository Configuration
 
-- [ ] **REPO-01**: Repository has `.gitattributes` with `eol=lf` for all text files to prevent CRLF corruption on Windows clones
+- [x] **REPO-01**: Repository has `.gitattributes` with `eol=lf` for all text files to prevent CRLF corruption on Windows clones
 
 ### Path Handling
 
@@ -50,7 +50,7 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| REPO-01 | Phase 1 | Pending |
+| REPO-01 | Phase 1 | Complete |
 | PATH-01 | Phase 2 | Pending |
 | PATH-02 | Phase 2 | Pending |
 | PATH-03 | Phase 2 | Pending |
