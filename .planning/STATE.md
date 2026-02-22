@@ -5,16 +5,15 @@
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Every file path operation, shell command, and platform-dependent behavior works correctly on Windows/Git Bash without breaking Linux or macOS
-**Current focus:** Phase 3 — Process and Signal Guards
+**Current focus:** Planning next milestone
 
 ## Current Position
 
-Phase: 3 of 3 (Process and Signal Guards)
-Plan: 2 of 2 in current phase
-Status: Complete
-Last activity: 2026-02-22 — Plan 03-02 completed
+Milestone: v1.0 Windows Compatibility — SHIPPED 2026-02-22
+Status: Complete — all 3 phases, 5 plans, 9 requirements satisfied
+Last activity: 2026-02-22 — Milestone v1.0 archived
 
-Progress: [██████████] 100%
+Next: `/gsd:new-milestone` to start next milestone cycle
 
 ## Performance Metrics
 
