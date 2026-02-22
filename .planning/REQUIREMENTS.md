@@ -20,7 +20,7 @@
 ### Process and Signal Handling
 
 - [ ] **PROC-01**: `process.kill(-child.pid)` in `executor.ts` guarded with `process.platform !== 'win32'` check with Windows-safe alternative
-- [ ] **PROC-02**: `chmod()` calls wrapped in try/catch or platform guard across all 6 files that use them
+- [ ] **PROC-02**: `chmod()` calls wrapped in platform guard across 4 production files (+ 3 test files verified safe — chmod is a no-op on Windows NTFS)
 - [ ] **PROC-03**: SIGKILL usage in `launcher.ts` guarded with platform check and Windows-safe fallback
 
 ## v2 Requirements
