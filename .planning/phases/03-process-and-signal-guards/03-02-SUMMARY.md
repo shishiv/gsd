@@ -95,6 +95,16 @@ None — no external service configuration required.
 - Phase 03 plan 01 (PROC-01/PROC-02 — detached process guard) can proceed independently
 - Pre-existing TypeScript errors in dashboard subsystem deferred; not a blocker for signal guards phase
 
+## Self-Check: PASSED
+
+- FOUND: `src/terminal/launcher.ts` (modified file)
+- FOUND: `.planning/phases/03-process-and-signal-guards/03-02-SUMMARY.md`
+- FOUND: commit `1411069` (task commit)
+- FOUND: commit `132ab69` (metadata commit)
+- VERIFIED: `grep -n "Windows" src/terminal/launcher.ts` returns lines 6 and 157
+- VERIFIED: `grep -n "child.kill('SIGKILL')" src/terminal/launcher.ts` returns lines 6 and 160
+- VERIFIED: 15/15 launcher tests pass
+
 ---
 *Phase: 03-process-and-signal-guards*
 *Completed: 2026-02-22*
