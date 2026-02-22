@@ -26,7 +26,9 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. After a fresh Windows clone, YAML skill files parse without trailing `\r` characters in string values
   2. Shell scripts in `scripts/` are executable in Git Bash without `\r: command not found` errors
   3. Vitest snapshot files are stable across Linux and Windows (no spurious CRLF diffs on re-run)
-**Plans**: TBD
+**Plans:** 1 plan
+Plans:
+- [ ] 01-01-PLAN.md — Create .gitattributes with LF enforcement and renormalize all tracked files
 
 ### Phase 2: Path Construction Audit
 **Goal**: All file path construction across the storage, safety, and CLI layers uses `path.join()`/`path.resolve()` and `os.homedir()`, with no Unix-only string assumptions reaching `fs` APIs
@@ -57,6 +59,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Repository Foundations | 0/TBD | Not started | - |
+| 1. Repository Foundations | 0/1 | Not started | - |
 | 2. Path Construction Audit | 0/TBD | Not started | - |
 | 3. Process and Signal Guards | 0/TBD | Not started | - |
