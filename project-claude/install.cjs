@@ -11,11 +11,14 @@ const dryRun = args.includes('--dry-run');
 const force = args.includes('--force');
 const quiet = args.includes('--quiet');
 const uninstall = args.includes('--uninstall');
+const global = args.includes('--global');
 
 // --- Paths ---
 const projectRoot = path.resolve(__dirname, '..');
 const sourceDir = __dirname;
-const claudeDir = path.join(projectRoot, '.claude');
+const homeDir = require('os').homedir();
+const installRoot = global ? homeDir : projectRoot;
+const claudeDir = path.join(installRoot, '.claude');
 
 // --- Counters ---
 const stats = { installed: 0, updated: 0, current: 0, warnings: 0 };
@@ -52,7 +55,7 @@ function readFileSafe(filePath) {
 // --- Standalone file install ---
 function installStandalone(entry) {
   const sourcePath = path.join(sourceDir, entry.source);
-  const targetPath = path.join(projectRoot, entry.target);
+  const targetPath = path.join(installRoot, entry.target);
 
   const sourceContent = readFileSafe(sourcePath);
   if (sourceContent === null) {
@@ -89,7 +92,7 @@ function installStandalone(entry) {
 // --- Extension install ---
 function installExtension(entry) {
   const sourcePath = path.join(sourceDir, entry.source);
-  const targetPath = path.join(projectRoot, entry.target);
+  const targetPath = path.join(installRoot, entry.target);
   const marker = entry.marker;
 
   const fragmentContent = readFileSafe(sourcePath);
@@ -160,7 +163,7 @@ function installExtension(entry) {
 // --- Settings merge ---
 function installSettings(entry) {
   const sourcePath = path.join(sourceDir, entry.source);
-  const targetPath = path.join(projectRoot, entry.target);
+  const targetPath = path.join(installRoot, entry.target);
 
   const sourceContent = readFileSafe(sourcePath);
   if (sourceContent === null) {
@@ -176,7 +179,11 @@ function installSettings(entry) {
     return;
   }
 
-  const targetContent = readFileSafe(targetPath);
+  let targetContent = readFileSafe(targetPath);
+  // Strip UTF-8 BOM if present (common on Windows)
+  if (targetContent !== null && targetContent.charCodeAt(0) === 0xFEFF) {
+    targetContent = targetContent.slice(1);
+  }
   let targetSettings;
 
   if (targetContent === null) {
@@ -197,6 +204,25 @@ function installSettings(entry) {
     return;
   }
 
+  // When installing globally, rewrite relative .claude/ paths to absolute
+  if (global && sourceSettings.hooks) {
+    const claudeAbsolute = path.join(installRoot, '.claude').replace(/\\/g, '/');
+    for (const hookGroups of Object.values(sourceSettings.hooks)) {
+      for (const group of hookGroups) {
+        if (group.hooks) {
+          for (const hook of group.hooks) {
+            if (typeof hook.command === 'string') {
+              hook.command = hook.command.replace(
+                /(?<=\s|^)\.claude\//g,
+                claudeAbsolute + '/'
+              );
+            }
+          }
+        }
+      }
+    }
+  }
+
   // Merge hook arrays
   let changed = false;
   if (sourceSettings.hooks) {
@@ -215,6 +241,7 @@ function installSettings(entry) {
         if (!sourceCmd) continue;
 
         // Check if this hook command already exists in target
+        // For global installs, also check against the absolute-path version
         const exists = targetSettings.hooks[event].some(group =>
           group.hooks?.some(h => h.command === sourceCmd)
         );
@@ -241,7 +268,11 @@ function installSettings(entry) {
 
 // --- Integration config install ---
 function installIntegrationConfig() {
-  const targetPath = path.join(projectRoot, '.planning', 'skill-creator.json');
+  if (global) {
+    log('  ~ skipped:   .planning/skill-creator.json (project-specific, use without --global)');
+    return;
+  }
+  const targetPath = path.join(installRoot, '.planning', 'skill-creator.json');
 
   if (fs.existsSync(targetPath)) {
     log('  = preserved: .planning/skill-creator.json (user config)');
@@ -284,7 +315,11 @@ function installIntegrationConfig() {
 
 // --- Patterns directory install ---
 function installPatternsDir() {
-  const targetDir = path.join(projectRoot, '.planning', 'patterns');
+  if (global) {
+    log('  ~ skipped:   .planning/patterns/ (project-specific)');
+    return;
+  }
+  const targetDir = path.join(installRoot, '.planning', 'patterns');
 
   if (fs.existsSync(targetDir)) {
     log('  = current:   .planning/patterns/');
@@ -301,7 +336,11 @@ function installPatternsDir() {
 
 // --- Gitignore update ---
 function updateGitignore() {
-  const targetPath = path.join(projectRoot, '.gitignore');
+  if (global) {
+    log('  ~ skipped:   .gitignore (project-specific)');
+    return;
+  }
+  const targetPath = path.join(installRoot, '.gitignore');
   const content = readFileSafe(targetPath) || '';
 
   // Check if .planning/ is already a blanket ignore (covers patterns)
@@ -340,8 +379,12 @@ function updateGitignore() {
 
 // --- Git hook install ---
 function installGitHook() {
+  if (global) {
+    log('  ~ skipped:   .git/hooks/post-commit (project-specific)');
+    return;
+  }
   const sourcePath = path.join(sourceDir, 'hooks', 'post-commit');
-  const targetPath = path.join(projectRoot, '.git', 'hooks', 'post-commit');
+  const targetPath = path.join(installRoot, '.git', 'hooks', 'post-commit');
 
   // Read source hook
   const sourceContent = readFileSafe(sourcePath);
@@ -422,15 +465,21 @@ function validateInstallation() {
     { name: 'observer agent', path: '.claude/agents/observer.md' },
     // Dashboard
     { name: 'gsd-dashboard', path: '.claude/commands/gsd-dashboard.md' },
-    // Config
-    { name: 'integration config', path: '.planning/skill-creator.json' },
+    // Teams
+    { name: 'gsd-debug-team', path: '.claude/teams/gsd-debug-team/config.json' },
+    { name: 'gsd-research-team', path: '.claude/teams/gsd-research-team/config.json' },
   ];
+
+  // Integration config is project-specific only
+  if (!global) {
+    checks.push({ name: 'integration config', path: '.planning/skill-creator.json' });
+  }
 
   let ok = 0;
   let missing = 0;
 
   for (const check of checks) {
-    const fullPath = path.join(projectRoot, check.path);
+    const fullPath = path.join(installRoot, check.path);
     if (fs.existsSync(fullPath)) {
       log(`  ✓ ${check.name}`);
       ok++;
@@ -440,35 +489,38 @@ function validateInstallation() {
     }
   }
 
-  // Check patterns directory
-  const patternsDir = path.join(projectRoot, '.planning', 'patterns');
-  if (fs.existsSync(patternsDir)) {
-    log('  ✓ patterns directory');
-    ok++;
-  } else {
-    log('  ✗ patterns directory — missing: .planning/patterns/');
-    missing++;
-  }
+  // Project-specific checks (skip in global mode)
+  if (!global) {
+    // Check patterns directory
+    const patternsDir = path.join(installRoot, '.planning', 'patterns');
+    if (fs.existsSync(patternsDir)) {
+      log('  ✓ patterns directory');
+      ok++;
+    } else {
+      log('  ✗ patterns directory — missing: .planning/patterns/');
+      missing++;
+    }
 
-  // Check git hook
-  const hookPath = path.join(projectRoot, '.git', 'hooks', 'post-commit');
-  if (fs.existsSync(hookPath)) {
-    log('  ✓ post-commit hook');
-    ok++;
-  } else {
-    log('  ✗ post-commit hook — missing: .git/hooks/post-commit');
-    missing++;
-  }
+    // Check git hook
+    const hookPath = path.join(installRoot, '.git', 'hooks', 'post-commit');
+    if (fs.existsSync(hookPath)) {
+      log('  ✓ post-commit hook');
+      ok++;
+    } else {
+      log('  ✗ post-commit hook — missing: .git/hooks/post-commit');
+      missing++;
+    }
 
-  // Check .gitignore
-  const gitignorePath = path.join(projectRoot, '.gitignore');
-  const gitignoreContent = readFileSafe(gitignorePath) || '';
-  if (gitignoreContent.includes('.planning/patterns/') || gitignoreContent.includes('.planning/')) {
-    log('  ✓ .gitignore (patterns excluded)');
-    ok++;
-  } else {
-    log('  ✗ .gitignore — .planning/patterns/ not excluded');
-    missing++;
+    // Check .gitignore
+    const gitignorePath = path.join(installRoot, '.gitignore');
+    const gitignoreContent = readFileSafe(gitignorePath) || '';
+    if (gitignoreContent.includes('.planning/patterns/') || gitignoreContent.includes('.planning/')) {
+      log('  ✓ .gitignore (patterns excluded)');
+      ok++;
+    } else {
+      log('  ✗ .gitignore — .planning/patterns/ not excluded');
+      missing++;
+    }
   }
 
   log('');
@@ -480,7 +532,8 @@ function validateInstallation() {
 // --- Uninstall integration ---
 function uninstallIntegration() {
   const prefix = dryRun ? '[DRY RUN] ' : '';
-  log(`${prefix}Uninstalling integration components...\n`);
+  const scope = global ? 'global' : 'project';
+  log(`${prefix}Uninstalling ${scope} integration components...\n`);
 
   const integrationTargets = {
     dirs: [
@@ -489,9 +542,13 @@ function uninstallIntegration() {
     ],
     files: [
       '.claude/agents/observer.md',
-      '.planning/skill-creator.json',
     ],
   };
+
+  // Project-specific files only in local mode
+  if (!global) {
+    integrationTargets.files.push('.planning/skill-creator.json');
+  }
 
   let removed = 0;
   let notFound = 0;
@@ -499,7 +556,7 @@ function uninstallIntegration() {
 
   // Remove directories
   for (const dir of integrationTargets.dirs) {
-    const fullPath = path.join(projectRoot, dir);
+    const fullPath = path.join(installRoot, dir);
     if (fs.existsSync(fullPath)) {
       if (!dryRun) {
         fs.rmSync(fullPath, { recursive: true, force: true });
@@ -514,7 +571,7 @@ function uninstallIntegration() {
 
   // Remove files
   for (const file of integrationTargets.files) {
-    const fullPath = path.join(projectRoot, file);
+    const fullPath = path.join(installRoot, file);
     if (fs.existsSync(fullPath)) {
       if (!dryRun) {
         fs.unlinkSync(fullPath);
@@ -527,27 +584,29 @@ function uninstallIntegration() {
     }
   }
 
-  // Remove git hook (only if it's ours)
-  const hookPath = path.join(projectRoot, '.git', 'hooks', 'post-commit');
-  const hookContent = readFileSafe(hookPath);
-  if (hookContent !== null) {
-    if (hookContent.includes('GSD skill-creator post-commit hook')) {
-      if (!dryRun) {
-        fs.unlinkSync(hookPath);
+  // Git hook — project-specific only
+  if (!global) {
+    const hookPath = path.join(installRoot, '.git', 'hooks', 'post-commit');
+    const hookContent = readFileSafe(hookPath);
+    if (hookContent !== null) {
+      if (hookContent.includes('GSD skill-creator post-commit hook')) {
+        if (!dryRun) {
+          fs.unlinkSync(hookPath);
+        }
+        log('  - removed:   .git/hooks/post-commit');
+        removed++;
+      } else {
+        log('  ~ skipped:   .git/hooks/post-commit (not ours)');
+        skipped++;
       }
-      log('  - removed:   .git/hooks/post-commit');
-      removed++;
     } else {
-      log('  ~ skipped:   .git/hooks/post-commit (not ours)');
-      skipped++;
+      log('  . not found: .git/hooks/post-commit');
+      notFound++;
     }
-  } else {
-    log('  . not found: .git/hooks/post-commit');
-    notFound++;
-  }
 
-  log('');
-  log('  Preserved: .planning/patterns/ (observation data)');
+    log('');
+    log('  Preserved: .planning/patterns/ (observation data)');
+  }
 
   log('');
   log(`${prefix}Uninstall complete: ${removed} removed, ${notFound} not found, ${skipped} skipped`);
@@ -555,10 +614,15 @@ function uninstallIntegration() {
 
 // --- Main ---
 function main() {
-  // Verify .claude/ exists
+  // Verify .claude/ exists (create for global if needed)
   if (!fs.existsSync(claudeDir)) {
-    console.error('Error: .claude/ directory not found. Install GSD first.');
-    process.exit(1);
+    if (global) {
+      if (!dryRun) fs.mkdirSync(claudeDir, { recursive: true });
+      log(`Created ${claudeDir}`);
+    } else {
+      console.error('Error: .claude/ directory not found. Install GSD first.');
+      process.exit(1);
+    }
   }
 
   // Read manifest
@@ -582,8 +646,9 @@ function main() {
     return;
   }
 
+  const scope = global ? 'global (~/.claude/)' : 'project';
   const prefix = dryRun ? '[DRY RUN] ' : '';
-  log(`${prefix}Installing project-claude files...\n`);
+  log(`${prefix}Installing skill-creator files [${scope}]...\n`);
 
   // Install standalone files
   if (manifest.files.standalone) {

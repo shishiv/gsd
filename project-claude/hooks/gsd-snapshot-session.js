@@ -10,7 +10,14 @@ import { readFileSync } from 'fs';
 let input = '';
 try {
   input = readFileSync('/dev/stdin', 'utf-8');
-} catch (e) {}
+} catch {
+  // Windows: /dev/stdin unavailable, try fd 0
+  try {
+    input = readFileSync(0, 'utf-8');
+  } catch {
+    input = '{}';
+  }
+}
 
 let parsed = {};
 try { parsed = JSON.parse(input); } catch (e) {}
