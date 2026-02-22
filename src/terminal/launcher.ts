@@ -1,9 +1,10 @@
 /**
  * Wetty process launcher and graceful shutdown.
  *
- * Spawns Wetty as a child process using config from Phase 123,
- * tracks process lifecycle state, and provides graceful shutdown
- * with SIGTERM -> timeout -> SIGKILL escalation.
+ * Spawns Wetty as a child process, tracks process lifecycle state,
+ * and provides graceful shutdown with SIGTERM -> timeout -> SIGKILL
+ * escalation. Windows-safe: child.kill('SIGKILL') maps to
+ * TerminateProcess() via Node.js (does not throw).
  *
  * @module terminal/launcher
  */
@@ -153,9 +154,12 @@ export async function shutdownWetty(proc: WettyProcess, options?: ShutdownOption
     // Set up SIGKILL escalation timer
     escalationTimer = setTimeout(() => {
       try {
+        // On Windows, Node.js maps SIGKILL to TerminateProcess() — force-terminates
+        // the child without a POSIX signal. This is safe and does not throw.
+        // On Unix, SIGKILL sends signal 9 (uncatchable immediate kill).
         child.kill('SIGKILL');
       } catch {
-        // Process may have already exited between SIGTERM and SIGKILL
+        // Process may have already exited between SIGTERM and SIGKILL (ESRCH)
       }
     }, gracePeriodMs);
 
