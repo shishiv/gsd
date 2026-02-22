@@ -50,8 +50,8 @@ export async function executeOffloadOp(operation: OffloadOperation): Promise<Off
   // Write script content to temp file
   await writeFile(scriptPath, operation.script, { mode: 0o755 });
 
-  // For bash/custom, ensure executable
-  if (operation.scriptType === 'bash' || operation.scriptType === 'custom') {
+  // For bash/custom, ensure executable (chmod is a no-op on Windows NTFS; skip explicitly)
+  if ((operation.scriptType === 'bash' || operation.scriptType === 'custom') && process.platform !== 'win32') {
     await chmod(scriptPath, 0o755);
   }
 
@@ -93,7 +93,8 @@ export async function executeOffloadOp(operation: OffloadOperation): Promise<Off
     // so that child processes (e.g., sleep) are also terminated
     const timer = setTimeout(() => {
       timedOut = true;
-      if (child.pid) {
+      if (child.pid && process.platform !== 'win32') {
+        // Unix: kill the entire process group so child processes are also terminated
         try {
           process.kill(-child.pid, 'SIGTERM');
         } catch {
@@ -101,6 +102,8 @@ export async function executeOffloadOp(operation: OffloadOperation): Promise<Off
           child.kill('SIGTERM');
         }
       } else {
+        // Windows: process groups not supported; kill the direct child
+        // child.kill() maps SIGTERM to force-terminate on Windows
         child.kill('SIGTERM');
       }
     }, operation.timeout);
