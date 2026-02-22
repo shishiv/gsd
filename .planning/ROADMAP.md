@@ -53,7 +53,7 @@ Plans:
   1. When the executor times out a child process on Windows, the child process terminates (not orphaned in Task Manager)
   2. `chmod` calls in skill generation and storage do not throw on Windows NTFS volumes
   3. Importing `src/terminal/launcher.ts` on Windows does not throw due to SIGKILL usage
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 Plans:
 - [ ] 03-01-PLAN.md — Platform guards for process group kill (PROC-01) and chmod calls (PROC-02) across 4 production files
 - [ ] 03-02-PLAN.md — SIGKILL documentation and verification in launcher.ts (PROC-03)
@@ -67,4 +67,4 @@ Phases execute in numeric order: 1 → 2 → 3
 |-------|----------------|--------|-----------|
 | 1. Repository Foundations | 1/1 | Complete   | 2026-02-22 |
 | 2. Path Construction Audit | 2/2 | Complete   | 2026-02-22 |
-| 3. Process and Signal Guards | 0/2 | Not started | - |
+| 3. Process and Signal Guards | 1/2 | In Progress|  |
