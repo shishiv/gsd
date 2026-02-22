@@ -12,7 +12,10 @@
     "test": "vitest",
     "setup:claude": "node project-claude/install.cjs",
     "setup:claude:force": "node project-claude/install.cjs --force",
-    "setup:claude:check": "node project-claude/install.cjs --dry-run"
+    "setup:claude:check": "node project-claude/install.cjs --dry-run",
+    "setup:claude:global": "node project-claude/install.cjs --global",
+    "setup:claude:global:force": "node project-claude/install.cjs --global --force",
+    "setup:claude:global:check": "node project-claude/install.cjs --global --dry-run"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.72.1",
