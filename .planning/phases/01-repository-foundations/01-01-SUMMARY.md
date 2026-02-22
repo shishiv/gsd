@@ -67,7 +67,7 @@ Each task was committed atomically:
 1. **Task 1: Create .gitattributes with LF enforcement rules** - `29ae889` (chore)
 2. **Task 2: Renormalize all tracked files to LF** - `199b0d2` (chore)
 
-**Plan metadata:** (created next)
+**Plan metadata:** `1c7e4dd` (docs: complete plan)
 
 ## Files Created/Modified
 
@@ -99,6 +99,14 @@ None — no external service configuration required. `.gitattributes` takes effe
 - Windows clones will receive LF in working directory for all tracked files
 - YAML skill files, shell scripts, and JSON configs are protected from CRLF corruption
 - Ready for Phase 1 Plan 2 (path handling) — no blockers
+
+## Self-Check: PASSED
+
+- FOUND: `.gitattributes` (created, committed at 29ae889)
+- FOUND: `.planning/phases/01-repository-foundations/01-01-SUMMARY.md` (this file)
+- FOUND: commit 29ae889 (chore: add .gitattributes)
+- FOUND: commit 199b0d2 (chore: normalize line endings)
+- FOUND: commit 1c7e4dd (docs: complete plan metadata)
 
 ---
 *Phase: 01-repository-foundations*
