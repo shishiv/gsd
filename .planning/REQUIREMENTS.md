@@ -11,11 +11,11 @@
 
 ### Path Handling
 
-- [ ] **PATH-01**: Storage layer uses `path.join()` instead of string concatenation for all file path construction
-- [ ] **PATH-02**: `version-manager.ts` uses `path.join()` and `execFile()` instead of template-string paths inside `exec()`
-- [ ] **PATH-03**: Hardcoded forward-slash path defaults in `src/safety/` and `src/validation/` replaced with `path.join()` equivalents
-- [ ] **PATH-04**: Home directory resolution uses `os.homedir()` consistently with no tilde-string assumptions passed to fs operations
-- [ ] **PATH-05**: All `import.meta.url` usage correctly wrapped with `fileURLToPath()` (no raw `.pathname` access)
+- [x] **PATH-01**: Storage layer uses `path.join()` instead of string concatenation for all file path construction
+- [x] **PATH-02**: `version-manager.ts` uses `path.join()` and `execFile()` instead of template-string paths inside `exec()`
+- [x] **PATH-03**: Hardcoded forward-slash path defaults in `src/safety/` and `src/validation/` replaced with `path.join()` equivalents
+- [x] **PATH-04**: Home directory resolution uses `os.homedir()` consistently with no tilde-string assumptions passed to fs operations
+- [x] **PATH-05**: All `import.meta.url` usage correctly wrapped with `fileURLToPath()` (no raw `.pathname` access)
 
 ### Process and Signal Handling
 
@@ -51,11 +51,11 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | REPO-01 | Phase 1 | Complete |
-| PATH-01 | Phase 2 | Pending |
-| PATH-02 | Phase 2 | Pending |
-| PATH-03 | Phase 2 | Pending |
-| PATH-04 | Phase 2 | Pending |
-| PATH-05 | Phase 2 | Pending |
+| PATH-01 | Phase 2 | Complete |
+| PATH-02 | Phase 2 | Complete |
+| PATH-03 | Phase 2 | Complete |
+| PATH-04 | Phase 2 | Complete |
+| PATH-05 | Phase 2 | Complete |
 | PROC-01 | Phase 3 | Pending |
 | PROC-02 | Phase 3 | Pending |
 | PROC-03 | Phase 3 | Pending |

@@ -5,32 +5,33 @@
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Every file path operation, shell command, and platform-dependent behavior works correctly on Windows/Git Bash without breaking Linux or macOS
-**Current focus:** Phase 1 — Repository Foundations
+**Current focus:** Phase 2 — Path Construction Audit
 
 ## Current Position
 
-Phase: 1 of 3 (Repository Foundations)
-Plan: 1 of TBD in current phase
-Status: In progress
-Last activity: 2026-02-22 — Plan 01-01 completed
+Phase: 2 of 3 (Path Construction Audit)
+Plan: 2 of 2 in current phase
+Status: Complete
+Last activity: 2026-02-22 — Plan 02-02 completed
 
-Progress: [█░░░░░░░░░] 10%
+Progress: [███░░░░░░░] 30%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: ~1 min
-- Total execution time: 0.02 hours
+- Total plans completed: 3
+- Average duration: ~9 min
+- Total execution time: 0.44 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-repository-foundations | 1 | ~1 min | ~1 min |
+| 02-path-construction-audit | 2 | ~25 min | ~12 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (~1 min)
+- Last 5 plans: 01-01 (~1 min), 02-01 (~10 min), 02-02 (~15 min)
 - Trend: —
 
 *Updated after each plan completion*
@@ -50,6 +51,8 @@ Recent decisions affecting current work:
 - [01-01]: Binary markers for png/jpg/gif/ico/woff/woff2/ttf/eot — prevent corruption of binary assets
 - [02-01]: PATH-05 verified pre-satisfied — all 10 import.meta.url uses already wrapped in fileURLToPath() or createRequire(); zero raw .pathname access
 - [02-01]: PATH-04 platform-adapter tilde strings confirmed display-only — PLATFORMS registry strings never passed to fs APIs; no code changes needed
+- [Phase 02-path-construction-audit]: Use execFile() not exec() for git calls — exec() routes through cmd.exe on Windows, breaking backslash paths
+- [Phase 02-path-construction-audit]: Apply forward-slash conversion only for git object-store colon-syntax paths (show/checkout); git log/diff/add handle native OS paths via argv correctly
 
 ### Pending Todos
 
@@ -63,5 +66,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: Completed 01-01-PLAN.md — .gitattributes created and all files renormalized
+Stopped at: Completed 02-01-PLAN.md — path.join() constructor defaults applied, PATH-04 and PATH-05 verified
 Resume file: None

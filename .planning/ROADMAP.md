@@ -13,7 +13,7 @@ A surgical compatibility pass on an existing TypeScript CLI tool. Three phases o
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Repository Foundations** - Add `.gitattributes` to prevent CRLF corruption on Windows clones (completed 2026-02-22)
-- [ ] **Phase 2: Path Construction Audit** - Replace all Unix-assumption path code with `path.join`/`os.homedir` across storage, safety, and CLI layers
+- [x] **Phase 2: Path Construction Audit** - Replace all Unix-assumption path code with `path.join`/`os.homedir` across storage, safety, and CLI layers (completed 2026-02-22)
 - [ ] **Phase 3: Process and Signal Guards** - Add platform guards around process group kills and `chmod` calls
 
 ## Phase Details
@@ -40,7 +40,7 @@ Plans:
   3. `version-manager.ts` executes git commands via `execFile()` with no shell interpolation of path strings
   4. `src/safety/` path comparisons against `assertSafePath` resolve identically on Windows (backslash) and Linux (forward slash)
   5. `import.meta.url` usages resolve to correct file paths on Windows without mangled drive letter prefixes
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 Plans:
 - [ ] 02-01-PLAN.md — Replace constructor default paths with path.join() across storage/safety/capabilities layers; verify PATH-04 and PATH-05 pre-satisfied
 - [ ] 02-02-PLAN.md — Migrate version-manager.ts from exec() to execFile() and path.join() for all git operations
@@ -63,5 +63,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Repository Foundations | 1/1 | Complete   | 2026-02-22 |
-| 2. Path Construction Audit | 0/2 | Not started | - |
+| 2. Path Construction Audit | 2/2 | Complete   | 2026-02-22 |
 | 3. Process and Signal Guards | 0/TBD | Not started | - |
