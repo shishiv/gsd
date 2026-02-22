@@ -48,6 +48,8 @@ Recent decisions affecting current work:
 - [01-01]: Use eol=lf not text=auto alone — text=auto alone checks out CRLF on Windows; eol=lf forces LF checkout on all platforms
 - [01-01]: Belt-and-suspenders explicit overrides for yml/yaml/json/sh/snap — survive future blanket rule edits
 - [01-01]: Binary markers for png/jpg/gif/ico/woff/woff2/ttf/eot — prevent corruption of binary assets
+- [02-01]: PATH-05 verified pre-satisfied — all 10 import.meta.url uses already wrapped in fileURLToPath() or createRequire(); zero raw .pathname access
+- [02-01]: PATH-04 platform-adapter tilde strings confirmed display-only — PLATFORMS registry strings never passed to fs APIs; no code changes needed
 
 ### Pending Todos
 
@@ -56,7 +58,7 @@ None yet.
 ### Blockers/Concerns
 
 - [Research]: Phase 3 process/signal — confirm `detached: true` + platform-guard interaction via integration test; documented behavior is clear but runtime interaction with executor timeout logic needs empirical Windows verification
-- [Research]: `platform-adapter.ts` tilde strings — verify `~/.claude/skills` strings in PLATFORMS registry are label-only and never passed to `fs` APIs; if they are, it is a live bug
+- [Research, RESOLVED 02-01]: `platform-adapter.ts` tilde strings — CONFIRMED display-only labels; PLATFORMS registry tilde strings are never passed to fs APIs. Actual fs calls use caller-provided sourceDir/targetDir with join(). No bug.
 
 ## Session Continuity
 
