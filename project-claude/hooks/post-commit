@@ -27,12 +27,15 @@
 # 1. jq is required for safe JSON construction
 command -v jq >/dev/null 2>&1 || exit 0
 
-# 2. Patterns directory must exist (created by install script)
-[ -d ".planning/patterns" ] || exit 0
+# 2. Get repo root (handles being called from subdirectories or hooks dir)
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
 
-# 3. Check integration config toggle (default: enabled)
-if [ -f ".planning/skill-creator.json" ]; then
-    if jq -e '.integration.observe_sessions == false' ".planning/skill-creator.json" >/dev/null 2>&1; then
+# 3. Patterns directory must exist (created by install script)
+[ -d "$REPO_ROOT/.planning/patterns" ] || exit 0
+
+# 4. Check integration config toggle (default: enabled)
+if [ -f "$REPO_ROOT/.planning/skill-creator.json" ]; then
+    if jq -e '.integration.observe_sessions == false' "$REPO_ROOT/.planning/skill-creator.json" >/dev/null 2>&1; then
         exit 0
     fi
 fi
@@ -55,7 +58,7 @@ COMMIT_TYPE=$(echo "$COMMIT_MSG" | sed -n 's/^\([a-z]*\).*/\1/p')
 FILES_CHANGED=$(git diff-tree --no-commit-id --name-only -r --root HEAD 2>/dev/null | wc -l | tr -d ' ')
 
 # Current phase from STATE.md (null if unavailable)
-PHASE=$(sed -n 's/^.*Phase:*[[:space:]]*\([0-9]*\).*/\1/p' .planning/STATE.md 2>/dev/null | head -1)
+PHASE=$(sed -n 's/^.*Phase:*[[:space:]]*\([0-9]*\).*/\1/p' "$REPO_ROOT/.planning/STATE.md" 2>/dev/null | head -1)
 
 # ---------------------------------------------------------------------------
 # JSON construction with jq (safe escaping for all string values)
@@ -83,6 +86,6 @@ ENTRY=$(jq -c -n \
 # Append to sessions.jsonl (atomic append, no locking needed for single line)
 # ---------------------------------------------------------------------------
 
-printf '%s\n' "$ENTRY" >> ".planning/patterns/sessions.jsonl"
+printf '%s\n' "$ENTRY" >> "$REPO_ROOT/.planning/patterns/sessions.jsonl"
 
 exit 0
