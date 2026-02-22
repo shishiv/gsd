@@ -9,6 +9,7 @@
  * as subagents that produce focused output.
  */
 
+import { join } from 'path';
 import { validateAgentFrontmatter } from '../validation/agent-validation.js';
 import type { AgentFrontmatter } from '../types/agent.js';
 
@@ -44,7 +45,7 @@ export interface CollectorAgentResult {
 // ============================================================================
 
 export class CollectorAgentGenerator {
-  constructor(private outputDir: string = '.claude/agents') {}
+  constructor(private outputDir: string = join('.claude', 'agents')) {}
 
   /**
    * Generate a read-only collector agent from config.

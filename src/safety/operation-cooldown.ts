@@ -55,7 +55,7 @@ export class OperationCooldown {
   private readonly config: CooldownConfig;
   private readonly statePath: string;
 
-  constructor(config: CooldownConfig, statePath: string = '.claude/.cooldown-state.json') {
+  constructor(config: CooldownConfig, statePath: string = join('.claude', '.cooldown-state.json')) {
     this.config = config;
     this.statePath = statePath;
   }

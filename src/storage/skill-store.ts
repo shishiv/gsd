@@ -89,7 +89,7 @@ function normalizeForWrite(metadata: SkillMetadata): OfficialSkillMetadata {
 }
 
 export class SkillStore {
-  constructor(private skillsDir: string = '.claude/skills') {}
+  constructor(private skillsDir: string = join('.claude', 'skills')) {}
 
   /**
    * Validate that a name is safe for filesystem use (no traversal).

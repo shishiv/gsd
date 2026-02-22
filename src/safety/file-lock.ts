@@ -10,7 +10,7 @@
 
 import { z } from 'zod';
 import { open, readFile, unlink, mkdir } from 'fs/promises';
-import { dirname } from 'path';
+import { dirname, join } from 'path';
 import { hostname } from 'os';
 
 // ============================================================================
@@ -64,7 +64,7 @@ export class FileLock {
   private readonly lockPath: string;
   private released = false;
 
-  constructor(lockPath: string = '.claude/.skill-creator.lock') {
+  constructor(lockPath: string = join('.claude', '.skill-creator.lock')) {
     this.lockPath = lockPath;
   }
 

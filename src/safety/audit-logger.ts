@@ -10,7 +10,7 @@
 
 import { z } from 'zod';
 import { readFile, appendFile, mkdir } from 'fs/promises';
-import { dirname } from 'path';
+import { dirname, join } from 'path';
 
 // ============================================================================
 // Zod Schemas
@@ -61,7 +61,7 @@ export class AuditLogger {
   private readonly logPath: string;
   private writeQueue: Promise<void> = Promise.resolve();
 
-  constructor(logPath: string = '.claude/.audit-log.jsonl') {
+  constructor(logPath: string = join('.claude', '.audit-log.jsonl')) {
     this.logPath = logPath;
   }
 
